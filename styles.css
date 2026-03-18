@@ -846,7 +846,7 @@ select {
 
 @media (max-width: 720px) {
   :root {
-    --cell-size: 28px;
+    --cell-size: 22px;
   }
 
   .game-header {
@@ -871,8 +871,8 @@ select {
   }
 
   .arcade {
-    grid-template-columns: 100px 1fr 100px;
-    gap: 12px;
+    grid-template-columns: 78px minmax(0, 1fr) 78px;
+    gap: 8px;
     position: relative;
   }
 
@@ -881,8 +881,9 @@ select {
     order: 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 6px;
+    gap: 4px;
     align-content: start;
+    min-width: 0;
   }
 
   .left-panel .panel-card:first-child {
@@ -914,10 +915,12 @@ select {
 
   .contamination-meter {
     padding: 8px;
+    min-width: 0;
   }
 
   .purification-meter {
     padding: 8px;
+    min-width: 0;
   }
 
   .contamination-meter .meter-head,
@@ -938,7 +941,8 @@ select {
     order: 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 6px;
+    min-width: 0;
   }
 
   .right-panel .portrait-card,
@@ -948,8 +952,9 @@ select {
 
   #nextPieceCard {
     grid-row: 1 / 4;
-    padding: 8px;
+    padding: 6px;
     overflow: hidden;
+    margin-top: 12px;
   }
 
   #nextPieceCard .panel-title {
@@ -958,9 +963,9 @@ select {
 
   #nextPieceCard .next-preview {
     width: 100%;
-    max-width: 80px;
+    max-width: 62px;
     height: auto;
-    gap: 6px;
+    gap: 4px;
   }
 
   #nextPieceCard .preview-cell {
@@ -971,22 +976,29 @@ select {
     position: relative;
     grid-column: 2;
     grid-row: 1 / 3;
+    min-width: 0;
+  }
+
+  .bottle-body {
+    border-width: 5px;
+    outline-width: 3px;
+    padding: 10px 10px 0;
   }
 
   .mobile-controls {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     margin-top: 12px;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     position: relative;
   }
 
   .control-btn {
-    width: 54px;
-    height: 54px;
-    font-size: 1.2rem;
+    width: 46px;
+    height: 46px;
+    font-size: 1rem;
   }
 
   /* Position pause button to appear at the right of mobile-controls */
@@ -1004,11 +1016,64 @@ select {
 
 @media (max-width: 480px) {
   :root {
-    --cell-size: 24px;
+    --cell-size: 18px;
   }
 
   .page-shell {
     padding: 12px;
+  }
+
+  .arcade {
+    grid-template-columns: 66px minmax(0, 1fr) 66px;
+    gap: 8px;
+  }
+
+  .left-panel,
+  .right-panel {
+    min-width: 0;
+  }
+
+  .center-stage {
+    min-width: 0;
+  }
+
+  .bottle-wrap {
+    width: 100%;
+  }
+
+  .bottle-neck {
+    height: 28px;
+    border-width: 3px;
+  }
+
+  .bottle-body {
+    border-width: 4px;
+    outline-width: 3px;
+    border-radius: 22px;
+    padding: 10px 10px 0;
+    box-shadow: 0 0 0 4px rgba(46, 157, 247, 0.1), var(--shadow);
+  }
+
+  #nextPieceCard {
+    padding: 6px;
+    margin-top: 16px;
+  }
+
+  #nextPieceCard .next-preview {
+    max-width: 54px;
+    gap: 4px;
+  }
+
+  .mobile-controls {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .control-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
   }
 
   .ui-btn,
