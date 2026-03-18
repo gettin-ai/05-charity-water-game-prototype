@@ -103,17 +103,6 @@
       </aside>
 
       <section class="center-stage">
-        <div class="warning-row">
-          <div class="warning-pill">
-            <span>Goal</span>
-            <span>Clear all dirty water</span>
-          </div>
-          <div class="warning-pill">
-            <span>Bonus</span>
-            <span>Click floating cans</span>
-          </div>
-        </div>
-
         <div class="bottle-wrap">
           <div class="bottle-neck"></div>
           <div class="bottle-body">
@@ -138,7 +127,7 @@
           <div id="heroName" class="portrait-caption">Player</div>
         </section>
 
-        <section class="panel-card">
+        <section id="nextPieceCard" class="panel-card">
           <div class="panel-title">Next Piece</div>
           <div id="nextPreview" class="next-preview" aria-label="Next piece preview">
             <div class="preview-cell empty"></div>
@@ -166,15 +155,6 @@
         <label for="playerNameInput">
           Player Name
           <input id="playerNameInput" name="playerName" type="text" maxlength="16" placeholder="Player">
-        </label>
-
-        <label for="timeSelect">
-          Time Limit
-          <select id="timeSelect" name="timeLimit">
-            <option value="1">1 minute</option>
-            <option value="2" selected>2 minutes</option>
-            <option value="3">3 minutes</option>
-          </select>
         </label>
 
         <label for="speedSelect">
@@ -248,7 +228,7 @@
           <strong id="endScore">0</strong>
         </div>
         <div>
-          <span>Time Left</span>
+            <span id="endTimeLabel">Time</span>
           <strong id="endTime">00:00</strong>
         </div>
       </div>

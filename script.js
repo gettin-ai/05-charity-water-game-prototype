@@ -18,6 +18,7 @@ const DIRTY_CLEAR_BONUS = 20;
 const JERRY_SCORE = 75;
 const SLUDGE_CLICK_PENALTY = 10;
 const SLUDGE_MISS_PENALTY = 5;
+const SPEED_BONUS_BASE = 200;
 
 const FAIL_CONTAM_GAIN = 1;
 const FAIL_TUG_LOSS = 2;
@@ -53,8 +54,7 @@ let contamination = 0;
 let purification = 0;
 let tug = 0;
 
-let levelDuration = 120;
-let timeLeft = 120;
+let timeLeft = 0;
 let gameSpeed = "slow";
 let playerName = "Player";
 let heroChoice = "builder";
@@ -109,13 +109,13 @@ const countdownDisplay = document.getElementById("countdownDisplay");
 
 const profileForm = document.getElementById("profileForm");
 const playerNameInput = document.getElementById("playerNameInput");
-const timeSelect = document.getElementById("timeSelect");
 const speedSelect = document.getElementById("speedSelect");
 const characterSelect = document.getElementById("characterSelect");
 
 const endTitle = document.getElementById("endTitle");
 const endMessage = document.getElementById("endMessage");
 const endScore = document.getElementById("endScore");
+const endTimeLabel = document.getElementById("endTimeLabel");
 const endTime = document.getElementById("endTime");
 const resultVillain = document.getElementById("resultVillain");
 const resultHero = document.getElementById("resultHero");
@@ -665,9 +665,7 @@ function addSludgeBlobToGrid() {
 function tickSecond() {
   if (!running || paused || boardBusy) return;
 
-  if (timeLeft > 0) {
-    timeLeft--;
-  }
+  timeLeft++;
 
   passiveContamCounter++;
   if (passiveContamCounter % PASSIVE_CONTAM_EVERY === 0) {
@@ -701,6 +699,23 @@ function tickSecond() {
   render();
 }
 
+function calculateTimeBonus() {
+  // Award bonus points based on completion time tiers
+  // < 1 minute (60s): 100 points
+  // < 3 minutes (180s): 50 points
+  // < 5 minutes (300s): 25 points
+  // >= 5 minutes: 0 points
+  if (timeLeft < 60) {
+    return 100;
+  } else if (timeLeft < 180) {
+    return 50;
+  } else if (timeLeft < 300) {
+    return 25;
+  } else {
+    return 0;
+  }
+}
+
 function spawnClickable() {
   if (!running || paused || boardBusy) return;
 
@@ -721,6 +736,7 @@ function spawnClickable() {
     if (type === "jerry") {
       score += JERRY_SCORE;
       purification = clamp(purification + 8, 0, 100);
+      showScoreChangeAtItem(item, `+${JERRY_SCORE}`);
     } else {
       score = Math.max(0, score - SLUDGE_CLICK_PENALTY);
       contamination = clamp(contamination - SLUDGE_CONTAM_GAIN, 0, 100);
@@ -734,8 +750,9 @@ function spawnClickable() {
   setTimeout(() => {
     if (!item.isConnected) return;
     if (type === "sludge") {
-      score = Math.max(0, score - SLUDGE_MISS_PENALTY);
+      const pointsLost = deductScore(SLUDGE_MISS_PENALTY);
       contamination = clamp(contamination + SLUDGE_CONTAM_GAIN, 0, 100);
+      showScoreChangeAtItem(item, `-${pointsLost}`, true);
       if (contamination >= 100) {
         contamination = 0;
         addDirtyBottomRow();
@@ -745,6 +762,30 @@ function spawnClickable() {
     }
     item.remove();
   }, 5500);
+}
+
+function deductScore(amount) {
+  const previousScore = score;
+  score = Math.max(0, score - amount);
+  return previousScore - score;
+}
+
+function showScoreChangeAtItem(item, text, isNegative = false) {
+  const feedback = document.createElement("div");
+  feedback.className = `score-feedback ${isNegative ? "negative" : "positive"}`;
+  feedback.textContent = text;
+
+  const x = item.offsetLeft + (item.offsetWidth / 2);
+  const y = item.offsetTop - 8;
+  feedback.style.left = `${x}px`;
+  feedback.style.top = `${y}px`;
+
+  floatingItemsEl.appendChild(feedback);
+
+  // Remove the feedback after the float animation finishes.
+  window.setTimeout(() => {
+    feedback.remove();
+  }, 850);
 }
 
 function clearLoops() {
@@ -817,6 +858,7 @@ function goToStartScreen() {
   contamination = 0;
   purification = 0;
   tug = 0;
+  timeLeft = 0;
   currentLevel = 1;
   dirtyRowCountdown = DIRTY_ROW_INTERVAL;
   sludgeCountdown = SLUDGE_INTERVAL;
@@ -855,9 +897,13 @@ function winGame(message) {
   clearLoops();
   clearGameProgress();
 
+  const timeBonus = calculateTimeBonus();
+  const finalScore = score + timeBonus;
+
   endTitle.textContent = "Victory!";
   endMessage.textContent = message;
-  endScore.textContent = String(score);
+  endScore.textContent = `${score} + ${timeBonus} (speed bonus) = ${finalScore}`;
+  endTimeLabel.textContent = "Time";
   endTime.textContent = formatTime(timeLeft);
   playAgainBtn.textContent = `Level ${currentLevel + 1}`;
   playAgainBtn.dataset.action = "next-level";
@@ -879,7 +925,8 @@ function loseGame(message) {
   endTitle.textContent = "Game Over";
   endMessage.textContent = `${message} The businessman points and laughs as your hero falls into dirty water.`;
   endScore.textContent = String(score);
-  endTime.textContent = formatTime(timeLeft);
+  endTimeLabel.textContent = "Time";
+  endTime.textContent = `${formatTime(timeLeft)} elapsed`;
   playAgainBtn.textContent = "Play Again";
   playAgainBtn.dataset.action = "restart";
 
@@ -978,7 +1025,6 @@ function capitalize(value) {
 function saveProfileFromForm() {
   const profile = {
     name: playerNameInput.value.trim() || "Player",
-    minutes: Number(timeSelect.value),
     speed: speedSelect.value,
     character: characterSelect.value
   };
@@ -997,8 +1043,7 @@ function getSavedProfile() {
 
 function applyProfile(profile) {
   playerName = profile.name || "Player";
-  levelDuration = (Number(profile.minutes) || 2) * 60;
-  timeLeft = levelDuration;
+  timeLeft = 0;
   gameSpeed = profile.speed || "slow";
   heroChoice = profile.character || "builder";
 
@@ -1012,13 +1057,11 @@ function applyProfile(profile) {
 function loadProfileIntoForm() {
   const profile = getSavedProfile() || {
     name: "Player",
-    minutes: 2,
     speed: "slow",
     character: "builder"
   };
 
   playerNameInput.value = profile.name;
-  timeSelect.value = String(profile.minutes);
   speedSelect.value = profile.speed;
   characterSelect.value = profile.character;
   applyProfile(profile);
@@ -1035,7 +1078,6 @@ function saveGameProgress() {
     purification,
     tug,
     timeLeft,
-    levelDuration,
     gameSpeed,
     playerName,
     heroChoice,
@@ -1074,7 +1116,6 @@ function restoreGameProgress(progress) {
   purification = progress.purification;
   tug = progress.tug;
   timeLeft = progress.timeLeft;
-  levelDuration = progress.levelDuration;
   gameSpeed = progress.gameSpeed;
   playerName = progress.playerName;
   heroChoice = progress.heroChoice;
