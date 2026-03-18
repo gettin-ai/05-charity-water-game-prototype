@@ -80,7 +80,6 @@ const floatingItemsEl = document.getElementById("floatingItems");
 
 const scoreText = document.getElementById("scoreText");
 const timeText = document.getElementById("timeText");
-const speedText = document.getElementById("speedText");
 const dirtyCountText = document.getElementById("dirtyCountText");
 
 const contaminationText = document.getElementById("contaminationText");
@@ -378,7 +377,6 @@ function render() {
 
   scoreText.textContent = String(score);
   timeText.textContent = formatTime(timeLeft);
-  speedText.textContent = capitalize(gameSpeed);
   dirtyCountText.textContent = String(countDirtyBlobs());
 
   contaminationText.textContent = `${contamination}/100`;
