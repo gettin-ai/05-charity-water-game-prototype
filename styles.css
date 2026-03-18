@@ -982,9 +982,9 @@ select {
   }
 
   .bottle-body {
-    border-width: 5px;
-    outline-width: 3px;
-    padding: 10px 10px 0;
+    border-width: 4px;
+    outline-width: 2px;
+    padding: 6px 6px 0;
   }
 
   .mobile-controls {
@@ -1052,9 +1052,9 @@ select {
 
   .bottle-body {
     border-width: 4px;
-    outline-width: 3px;
+    outline-width: 2px;
     border-radius: 22px;
-    padding: 10px 10px 0;
+    padding: 6px 6px 0;
     box-shadow: 0 0 0 4px rgba(46, 157, 247, 0.1), var(--shadow);
   }
 
