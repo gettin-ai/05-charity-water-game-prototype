@@ -884,6 +884,7 @@ select {
     gap: 4px;
     align-content: start;
     min-width: 0;
+    margin-top: 42px;
   }
 
   .left-panel .panel-card:first-child {
@@ -943,6 +944,7 @@ select {
     grid-template-columns: 1fr;
     gap: 6px;
     min-width: 0;
+    margin-top: 42px;
   }
 
   .right-panel .portrait-card,
@@ -954,7 +956,7 @@ select {
     grid-row: 1 / 4;
     padding: 6px;
     overflow: hidden;
-    margin-top: 12px;
+    margin-top: 0;
   }
 
   #nextPieceCard .panel-title {
@@ -986,10 +988,11 @@ select {
   }
 
   .mobile-controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 46px);
+    justify-content: center;
     gap: 6px;
     margin-top: 12px;
-    justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
     position: relative;
@@ -999,6 +1002,7 @@ select {
     width: 46px;
     height: 46px;
     font-size: 1rem;
+    justify-self: center;
   }
 
   /* Position pause button to appear at the right of mobile-controls */
@@ -1065,6 +1069,9 @@ select {
   }
 
   .mobile-controls {
+    display: grid;
+    grid-template-columns: repeat(4, 44px);
+    justify-content: center;
     flex-wrap: nowrap;
     gap: 6px;
     margin-top: 10px;
